@@ -1,17 +1,17 @@
-importScripts('../epoxy/index.js?v=3');
-importScripts('u/bundle.js?v=3');
-importScripts('u/config.js?v=3');
-importScripts(__uv$config.sw || 'u/sw.js?v=3');
+importScripts('/u/bundle.js');
+importScripts('/u/config.js');
+importScripts(__uv$config.sw || '/u/sw.js');
 
 const uv = new UVServiceWorker();
 
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        (async ()=>{
-            if(uv.route(event)) {
-                return await uv.fetch(event);
-            }
-            return await fetch(event.request);
-        })()
-    );
+async function handleRequest(event) {
+    if (uv.route(event)) {
+        return await uv.fetch(event);
+    }
+    
+    return await fetch(event.request)
+}
+
+self.addEventListener('fetch', (event) => {
+    event.respondWith(handleRequest(event));
 });
